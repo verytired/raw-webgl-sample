@@ -3,6 +3,3 @@
 *.iml
 node_modules
 *.log
-
-src/**/*.js
-src/**/*.js.map
