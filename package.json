@@ -1,14 +1,15 @@
 {
   "name": "raw-webgl-sample",
   "version": "0.0.1",
-  "description": "",
+  "description": "stady for webgl",
   "repository": {
     "type": "git",
     "url": "git://github.com/verytired/raw-webgl-sample.git"
   },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "gulp"
   },
   "license": "MIT",
   "devDependencies": {
