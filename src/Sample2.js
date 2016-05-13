@@ -93,11 +93,18 @@ class Sample2 {
         }
 
         // プログラムオブジェクトの生成から選択まで
-        let programs = this.gl.createProgram();
+        const programs = this.gl.createProgram();
+
         this.gl.attachShader(programs, vertexShader);
         this.gl.attachShader(programs, fragmentShader);
         this.gl.linkProgram(programs);
-        this.gl.useProgram(programs);
+
+        // プログラムオブジェクトのエラー判定処理
+        if (this.gl.getProgramParameter(programs, this.gl.LINK_STATUS)) {
+            this.gl.useProgram(programs);
+        } else {
+            console.log('Failed Link Program', this.gl.getProgramInfoLog(programs));
+        }
 
         // 生成したプログラムオブジェクトを戻り値として返す
         return programs;
