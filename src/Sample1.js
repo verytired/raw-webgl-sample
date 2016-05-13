@@ -1,27 +1,27 @@
-/*
+/**
 * Sample 1
 * 生WebGLを記述して三角形を表示させる
 */
 
 class Sample1 {
 
-  /*
+  /**
    * run
    * サンプルコード実行
    */
   run() {
 
-    //canvasへの参上を変数に取得する
+    // canvasへの参上を変数に取得する
     let c = document.getElementById('canvas');
 
     // size指定
     c.width = 512;
     c.height = 512;
 
-    //WebGLコンテキストをcanvasから取得する
+    // WebGLコンテキストをcanvasから取得する
     const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
 
-    //WebGLコンテキストの取得ができたかどうか
+    // WebGLコンテキストの取得ができたかどうか
     if (gl) {
       console.log('supports webgl');
     } else {
@@ -39,7 +39,7 @@ class Sample1 {
     let triangleData = this.genTriangle();
 
     // 頂点データからバッファを生成
-    var vertexBuffer = gl.createBuffer();
+    let vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleData.p), gl.STATIC_DRAW);
 
@@ -69,7 +69,7 @@ class Sample1 {
     gl.flush();
   }
 
-  /*
+  /**
    * genTriangle
    * 三角形の頂点情報を返却する
    */

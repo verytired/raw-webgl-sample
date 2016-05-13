@@ -1,4 +1,4 @@
-/*
+/**
  * Sample 2
  */
 
@@ -10,14 +10,14 @@ class Sample2 {
      */
     constructor() {
 
-        //canvasへの参上を変数に取得する
+        // canvasへの参上を変数に取得する
         let c = document.getElementById('canvas');
 
         // size指定
         c.width = 512;
         c.height = 512;
 
-        //WebGLコンテキストをcanvasから取得する
+        // WebGLコンテキストをcanvasから取得する
         this.gl = c.getContext('webgl') || c.getContext('experimental-webgl');
     }
 
@@ -27,7 +27,7 @@ class Sample2 {
      */
     run() {
 
-        //WebGLコンテキストの取得ができたかどうか
+        // WebGLコンテキストの取得ができたかどうか
         if (this.gl) {
             console.log('supports webgl');
         } else {
@@ -45,7 +45,7 @@ class Sample2 {
         let triangleData = this.genTriangle();
 
         // 頂点データからバッファを生成
-        var vertexBuffer = this.gl.createBuffer();
+        let vertexBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(triangleData.p), this.gl.STATIC_DRAW);
 
@@ -132,4 +132,3 @@ class Sample2 {
 }
 
 module.exports = Sample2;
-
