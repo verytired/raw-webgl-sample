@@ -1,7 +1,14 @@
-// sample 1
+/*
+* Sample 1
+* 生WebGLを記述して三角形を表示させる
+*/
 
 class Sample1 {
 
+  /*
+   * run
+   * サンプルコード実行
+   */
   run() {
 
     //canvasへの参上を変数に取得する
@@ -62,6 +69,10 @@ class Sample1 {
     gl.flush();
   }
 
+  /*
+   * genTriangle
+   * 三角形の頂点情報を返却する
+   */
   genTriangle() {
     let obj = {};
     obj.p = [
