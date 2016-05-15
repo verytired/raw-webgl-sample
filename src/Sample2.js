@@ -1,9 +1,9 @@
+import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
 /*
  * Sample 2
  */
 
 class Sample2 {
-
     /**
      * constructor
      * コンストラクタ
@@ -12,10 +12,10 @@ class Sample2 {
 
         //canvasへの参上を変数に取得する
         let c = document.getElementById('canvas');
-
         // size指定
         c.width = 512;
         c.height = 512;
+        this.canvas = c;
 
         //WebGLコンテキストをcanvasから取得する
         this.gl = c.getContext('webgl') || c.getContext('experimental-webgl');
@@ -45,7 +45,7 @@ class Sample2 {
         let triangleData = this.genTriangle();
 
         // 頂点データからバッファを生成
-        var vertexBuffer = this.gl.createBuffer();
+        let vertexBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(triangleData.p), this.gl.STATIC_DRAW);
 
@@ -60,6 +60,42 @@ class Sample2 {
         let attLocation = this.gl.getAttribLocation(programs, 'position');
         this.gl.enableVertexAttribArray(attLocation);
         this.gl.vertexAttribPointer(attLocation, 3, this.gl.FLOAT, false, 0, 0);
+
+        // 行列の初期化
+        let mat = new matIV();
+        let mMatrix = mat.identity(mat.create());
+        let vMatrix = mat.identity(mat.create());
+        let pMatrix = mat.identity(mat.create());
+        let vpMatrix = mat.identity(mat.create());
+        let mvpMatrix = mat.identity(mat.create());
+
+        // モデル座標変換行列
+        let move = [0.5, 0.5, 0.0];           // 移動量はXYそれぞれ0.5
+        mat.translate(mMatrix, move, mMatrix);
+
+        // ビュー座標変換行列
+        let cameraPosition = [0.0, 0.0, 3.0]; // カメラの位置
+        let centerPoint = [0.0, 0.0, 0.0];    // 注視点
+        let cameraUp = [0.0, 1.0, 0.0];       // カメラの上方向
+        mat.lookAt(cameraPosition, centerPoint, cameraUp, vMatrix);
+
+        // プロジェクションのための情報を揃える
+        let fovy = 45;                             // 視野角
+        let aspect = this.canvas.width / this.canvas.height; // アスペクト比
+        let near = 0.1;                            // 空間の最前面
+        let far = 10.0;                            // 空間の奥行き終端
+        mat.perspective(fovy, aspect, near, far, pMatrix);
+
+        // 行列を掛け合わせてMVPマトリッ        // プログラムオブジェクトに三角形の頂点データを登録
+        let attLocation = this.gl.getAttribLocation(programs, 'position');
+        this.gl.enableVertexAttribArray(attLocation);
+        this.gl.vertexAttribPointer(attLocation, 3, this.gl.FLOAT, false, 0, 0);クスを生成
+        mat.multiply(pMatrix, vMatrix, vpMatrix);   // pにvを掛ける
+        mat.multiply(vpMatrix, mMatrix, mvpMatrix); // さらにmを掛ける
+
+        // シェーダに行列を送信する
+        let uniLocation = this.gl.getUniformLocation(programs, 'mvpMatrix');
+        this.gl.uniformMatrix4fv(uniLocation, false, mvpMatrix);
 
         // 描画
         this.gl.drawArrays(this.gl.TRIANGLES, 0, triangleData.p.length / 3);
