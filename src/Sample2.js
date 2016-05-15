@@ -86,10 +86,7 @@ class Sample2 {
         let far = 10.0;                            // 空間の奥行き終端
         mat.perspective(fovy, aspect, near, far, pMatrix);
 
-        // 行列を掛け合わせてMVPマトリッ        // プログラムオブジェクトに三角形の頂点データを登録
-        let attLocation = this.gl.getAttribLocation(programs, 'position');
-        this.gl.enableVertexAttribArray(attLocation);
-        this.gl.vertexAttribPointer(attLocation, 3, this.gl.FLOAT, false, 0, 0);クスを生成
+        // 行列を掛け合わせてMVPマトリックスを生成
         mat.multiply(pMatrix, vMatrix, vpMatrix);   // pにvを掛ける
         mat.multiply(vpMatrix, mMatrix, mvpMatrix); // さらにmを掛ける
 
