@@ -34,7 +34,7 @@ class Sample3 {
    */
   run() {
 
-    //WebGLコンテキストの取得ができたかどうか
+    // WebGLコンテキストの取得ができたかどうか
     if (this.gl) {
       console.log('supports webgl');
     } else {
@@ -48,13 +48,14 @@ class Sample3 {
     // エレメントをクリア
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-    // 三角形を形成する頂点のデータを受け取る
-    this.triangleData = this.genTriangle();
+
+    // 球体を形成する頂点のデータを受け取る
+    this.sphereData = sphere(16, 16, 1.0);
 
     // 頂点データからバッファを生成
     let vertexBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.triangleData.p), this.gl.STATIC_DRAW);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.p), this.gl.STATIC_DRAW);
 
     // シェーダとプログラムオブジェクト
     const vertexSource = document.getElementById('vs').textContent;
@@ -63,7 +64,7 @@ class Sample3 {
     // ユーザー定義のプログラムオブジェクト生成関数
     this.programs = this.createShaderProgram(vertexSource, fragmentSource);
 
-    // プログラムオブジェクトに三角形の頂点データを登録
+    // プログラムオブジェクトに頂点データを登録
     let attLocation = this.gl.getAttribLocation(this.programs, 'position');
     this.gl.enableVertexAttribArray(attLocation);
     this.gl.vertexAttribPointer(attLocation, 3, this.gl.FLOAT, false, 0, 0);
@@ -112,7 +113,7 @@ class Sample3 {
 
     // モデル座標変換行列
     // 移動
-    let move = [0.5, 0.5, 0.0];           // 移動量はXYそれぞれ0.5
+    let move = [0.0, 0.0, 0.0];
     this.mat.translate(this.mMatrix, move, this.mMatrix);
 
     // 回転
@@ -133,7 +134,7 @@ class Sample3 {
     this.mat.multiply(this.vpMatrix, this.mMatrix, this.mvpMatrix);
 
     // 描画
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, this.triangleData.p.length / 3);
+    this.gl.drawArrays(this.gl.TRIANGLES, 0, this.sphereData.p.length / 3);
     this.gl.flush();
 
     // 再帰呼び出し
@@ -185,27 +186,6 @@ class Sample3 {
     // 生成したプログラムオブジェクトを戻り値として返す
     return programs;
   }
-
-  /**
-   * genTriangle
-   * 三角形の頂点情報を返却する
-   */
-  genTriangle() {
-    let obj = {};
-    obj.p = [
-      // ひとつ目の三角形
-      0.0, 0.5, 0.0,
-      0.5, -0.5, 0.0,
-      -0.5, -0.5, 0.0,
-
-      // ふたつ目の三角形
-      0.0, -0.5, 0.0,
-      0.5, 0.5, 0.0,
-      -0.5, 0.5, 0.0
-    ];
-    return obj;
-  }
 }
 
 module.exports = Sample3;
-

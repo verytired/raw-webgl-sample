@@ -470,6 +470,14 @@ export function torus(row, column, irad, orad, color) {
     return {p: pos, n: nor, c: col, t: st, i: idx};
 }
 
+/**
+ * 球体の頂点データ生成
+ * @param row
+ * @param column
+ * @param rad
+ * @param color
+ * @returns {{p: Array, n: Array, c: Array, t: Array, i: Array}}
+ */
 export function sphere(row, column, rad, color) {
     let i, j, tc;
     let pos = new Array(), nor = new Array(),
@@ -496,7 +504,7 @@ export function sphere(row, column, rad, color) {
             st.push(1 - 1 / column * j, 1 / row * i);
         }
     }
-    r = 0;
+    let r = 0;
     for (i = 0; i < row; i++) {
         for (j = 0; j < column; j++) {
             r = (column + 1) * i + j;
