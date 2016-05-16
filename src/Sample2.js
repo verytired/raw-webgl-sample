@@ -70,8 +70,14 @@ class Sample2 {
         let mvpMatrix = mat.identity(mat.create());
 
         // モデル座標変換行列
+        // 移動
         let move = [0.5, 0.5, 0.0];           // 移動量はXYそれぞれ0.5
         mat.translate(mMatrix, move, mMatrix);
+
+        // 回転
+        let radians = 90 * Math.PI / 180;
+        let axis = [0.0, 0.0, 1.0];
+        mat.rotate(mMatrix, radians, axis, mMatrix);
 
         // ビュー座標変換行列
         let cameraPosition = [0.0, 0.0, 3.0]; // カメラの位置
