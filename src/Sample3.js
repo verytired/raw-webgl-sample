@@ -57,6 +57,11 @@ class Sample3 {
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
     this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.p), this.gl.STATIC_DRAW);
 
+    // インデックスバッファの生成
+    let indexBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(this.sphereData.i), this.gl.STATIC_DRAW);
+
     // シェーダとプログラムオブジェクト
     const vertexSource = document.getElementById('vs').textContent;
     const fragmentSource = document.getElementById('fs').textContent;
@@ -134,7 +139,9 @@ class Sample3 {
     this.mat.multiply(this.vpMatrix, this.mMatrix, this.mvpMatrix);
 
     // 描画
-    this.gl.drawArrays(this.gl.TRIANGLES, 0, this.sphereData.p.length / 3);
+    // this.gl.drawArrays(this.gl.TRIANGLES, 0, this.sphereData.p.length / 3);
+    // インデックスバッファによる描画
+    this.gl.drawElements(this.gl.TRIANGLES, this.sphereData.i.length, this.gl.UNSIGNED_SHORT, 0);
     this.gl.flush();
 
     // 再帰呼び出し
