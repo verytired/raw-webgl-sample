@@ -48,20 +48,6 @@ class Sample3 {
     // エレメントをクリア
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
-
-    // 球体を形成する頂点のデータを受け取る
-    this.sphereData = sphere(16, 16, 1.0);
-
-    // 頂点データからバッファを生成
-    let vertexBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.p), this.gl.STATIC_DRAW);
-
-    // インデックスバッファの生成
-    let indexBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(this.sphereData.i), this.gl.STATIC_DRAW);
-
     // シェーダとプログラムオブジェクト
     const vertexSource = document.getElementById('vs').textContent;
     const fragmentSource = document.getElementById('fs').textContent;
@@ -69,10 +55,41 @@ class Sample3 {
     // ユーザー定義のプログラムオブジェクト生成関数
     this.programs = this.createShaderProgram(vertexSource, fragmentSource);
 
-    // プログラムオブジェクトに頂点データを登録
-    let attLocation = this.gl.getAttribLocation(this.programs, 'position');
-    this.gl.enableVertexAttribArray(attLocation);
-    this.gl.vertexAttribPointer(attLocation, 3, this.gl.FLOAT, false, 0, 0);
+    // 球体を形成する頂点のデータを受け取る
+    this.sphereData = sphere(16, 16, 1.0);
+
+    // 頂点データからバッファを生成
+    /*
+    let vertexBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.p), this.gl.STATIC_DRAW);
+
+     // プログラムオブジェクトに頂点データを登録
+     let attLocation = this.gl.getAttribLocation(this.programs, 'position');
+     this.gl.enableVertexAttribArray(attLocation);
+     this.gl.vertexAttribPointer(attLocation, 3, this.gl.FLOAT, false, 0, 0);
+
+     */
+    // 頂点データからバッファを生成して登録する（頂点座標）
+    let vPositionBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vPositionBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.p), this.gl.STATIC_DRAW);
+    let attLocPosition = this.gl.getAttribLocation(this.programs, 'position');
+    this.gl.enableVertexAttribArray(attLocPosition);
+    this.gl.vertexAttribPointer(attLocPosition, 3, this.gl.FLOAT, false, 0, 0);
+
+    // 頂点データからバッファを生成して登録する（頂点色）
+    let vColorBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vColorBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.c), this.gl.STATIC_DRAW);
+    let attLocColor = this.gl.getAttribLocation(this.programs, 'color');
+    this.gl.enableVertexAttribArray(attLocColor);
+    this.gl.vertexAttribPointer(attLocColor, 4, this.gl.FLOAT, false, 0, 0);
+
+    // インデックスバッファの生成
+    let indexBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(this.sphereData.i), this.gl.STATIC_DRAW);
 
     // 行列の初期化
     this.mat = new matIV();
@@ -122,10 +139,22 @@ class Sample3 {
     this.mat.translate(this.mMatrix, move, this.mMatrix);
 
     // 回転
+    /*
     let radians = (this.count % 360) * Math.PI / 180;
     let axis = [0.0, 0.0, 1.0];
     this.mat.rotate(this.mMatrix, radians, axis, this.mMatrix);
+    */
 
+    // Canvasエレメントをクリアする
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    let radians = (this.count % 360) * Math.PI / 180;
+
+    // モデル座標変換行列を一度初期化してリセットする
+    this.mat.identity(mMatrix);
+    // モデル座標変換行列
+    let axis = [0.0, 1.0, 1.0];
+    this.mat.rotate(this.mMatrix, radians, axis, this.mMatrix);
 
     // 行列を掛け合わせてMVPマトリックスを生成
     this.mat.multiply(this.pMatrix, this.vMatrix, this.vpMatrix);   // pにvを掛ける
