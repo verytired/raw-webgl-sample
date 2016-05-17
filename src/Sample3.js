@@ -115,6 +115,10 @@ class Sample3 {
     // 行列を掛け合わせてVPマトリックスを生成しておく
     this.mat.multiply(this.pMatrix, this.vMatrix, this.vpMatrix);   // pにvを掛ける
 
+    // 設定を有効化する
+    this.gl.enable(this.gl.DEPTH_TEST);
+    this.gl.depthFunc(this.gl.LEQUAL);
+
     // rendering開始
     this.render();
   }
@@ -146,12 +150,12 @@ class Sample3 {
     */
 
     // Canvasエレメントをクリアする
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     let radians = (this.count % 360) * Math.PI / 180;
 
     // モデル座標変換行列を一度初期化してリセットする
-    this.mat.identity(mMatrix);
+    this.mat.identity(this.mMatrix);
     // モデル座標変換行列
     let axis = [0.0, 1.0, 1.0];
     this.mat.rotate(this.mMatrix, radians, axis, this.mMatrix);
