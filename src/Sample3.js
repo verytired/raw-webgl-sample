@@ -1,7 +1,12 @@
-import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
 /*
- * Sample 2
+ * Sample 3
+ * 球体モデルの表示
+ * index buffer
+ * 頂点色で着色して描画
+ * depth test
  */
+
+import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
 
 class Sample3 {
   /**

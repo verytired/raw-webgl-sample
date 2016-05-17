@@ -1,7 +1,10 @@
-import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
 /*
  * Sample 2
+ * 行列計算によるtranslate/ rotation
+ * requestAnimationFrameによるアニメーション
  */
+
+import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
 
 class Sample2 {
   /**
