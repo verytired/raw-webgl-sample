@@ -4,13 +4,21 @@
     <title>raw-webgl-sample</title>
     <script src="js/bundle.js"></script>
     <script id="vs" type="x-shader/x-vertex">
-        attribute vec3 position; // 頂点属性：頂点座標位置
-        attribute vec4 color;    // 頂点属性：頂点色
-        uniform mat4 mvpMatrix;
-        varying vec4 vColor;     // フラグメントシェーダへ色を渡す
+        attribute vec3 position;     // 頂点属性：頂点座標位置
+        attribute vec3 normal;       // 頂点属性：頂点法線
+        attribute vec4 color;        // 頂点属性：頂点色
+        uniform mat4 mvpMatrix;      // MVPマトリックス
+        uniform mat4 invMatrix;      // inverseマトリックス
+        uniform vec3 lightDirection; // 平行光源の向き
+        varying vec4 vColor;         // フラグメントシェーダへ色を渡す
         void main(){
+            // 平行光源の向きを逆行列で修正
+            vec3 invLight = (invMatrix * vec4(lightDirection, 1.0)).xyz;
+            // 拡散光の強度を算出
+            float diff = clamp(dot(normalize(invLight), normal), 0.1, 1.0);
             // varying変数に頂点色を代入
-            vColor = color;
+            vColor = vec4(color.rgb * diff, color.a);
+            // 頂点の座標変換
             gl_Position = mvpMatrix * vec4(position, 1.0);
         }
     </script>

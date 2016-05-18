@@ -1,4 +1,4 @@
-/*
+  /*
  * Sample 4
  * todo:ライティングの実装
  */
@@ -57,6 +57,12 @@ class Sample4 {
     // ユーザー定義のプログラムオブジェクト生成関数
     this.programs = this.createShaderProgram(vertexSource, fragmentSource);
 
+    // uniformロケーションを取得しておく
+    this.uniLocation = {};
+    this.uniLocation.mvpMatrix = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
+    this.uniLocation.invMatrix = this.gl.getUniformLocation(this.programs, 'invMatrix');
+    this.uniLocation.lightDirection = this.gl.getUniformLocation(this.programs, 'lightDirection');
+
     // 球体を形成する頂点のデータを受け取る
     this.sphereData = sphere(16, 16, 1.0);
 
@@ -67,6 +73,14 @@ class Sample4 {
     let attLocPosition = this.gl.getAttribLocation(this.programs, 'position');
     this.gl.enableVertexAttribArray(attLocPosition);
     this.gl.vertexAttribPointer(attLocPosition, 3, this.gl.FLOAT, false, 0, 0);
+
+    // 頂点データからバッファを生成して登録する（頂点法線）
+    let vNormalBuffer = this.gl.createBuffer();
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vNormalBuffer);
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.n), this.gl.STATIC_DRAW);
+    let attLocNormal = this.gl.getAttribLocation(this.programs, 'normal');
+    this.gl.enableVertexAttribArray(attLocNormal);
+    this.gl.vertexAttribPointer(attLocNormal, 3, this.gl.FLOAT, false, 0, 0);
 
     // 頂点データからバッファを生成して登録する（頂点色）
     let vColorBuffer = this.gl.createBuffer();
@@ -109,6 +123,9 @@ class Sample4 {
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
 
+    // 平行光源の向き
+    this.lightDirection = [1.0, 1.0, 1.0];
+
     // rendering開始
     this.render();
   }
@@ -119,7 +136,7 @@ class Sample4 {
   render() {
 
     // Canvasエレメントをクリアする
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     // モデル座標変換行列を一度初期化してリセットする
     this.mat.identity(this.mMatrix);
@@ -129,11 +146,10 @@ class Sample4 {
 
     // モデル座標変換行列
     // 移動
-    let move = [0.0, 0.0, 0.0];
-    this.mat.translate(this.mMatrix, move, this.mMatrix);
+    //let move = [0.0, 0.0, 0.0];
+    //this.mat.translate(this.mMatrix, move, this.mMatrix);
 
-    // Canvasエレメントをクリアする
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
 
     // モデル座標変換行列を一度初期化してリセットする
     this.mat.identity(this.mMatrix);
@@ -144,15 +160,23 @@ class Sample4 {
     this.mat.rotate(this.mMatrix, radians, axis, this.mMatrix);
 
     // 行列を掛け合わせてMVPマトリックスを生成
-    this.mat.multiply(this.pMatrix, this.vMatrix, this.vpMatrix);   // pにvを掛ける
+    //this.mat.multiply(this.pMatrix, this.vMatrix, this.vpMatrix);   // pにvを掛ける
     this.mat.multiply(this.vpMatrix, this.mMatrix, this.mvpMatrix); // さらにmを掛ける
 
+    // 逆行列を生成
+    this.mat.inverse(this.mMatrix, this.invMatrix);
+
     // シェーダに行列を送信する
-    let uniLocation = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
-    this.gl.uniformMatrix4fv(uniLocation, false, this.mvpMatrix);
+    //let uniLocation = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
+    //this.gl.uniformMatrix4fv(uniLocation, false, this.mvpMatrix);
+
+    // シェーダに汎用データを送信する
+    this.gl.uniformMatrix4fv(this.uniLocation.mvpMatrix, false, this.mvpMatrix);
+    this.gl.uniformMatrix4fv(this.uniLocation.invMatrix, false, this.invMatrix);
+    this.gl.uniform3fv(this.uniLocation.lightDirection, this.lightDirection);
 
     // VPマトリックスにモデル座標変換行列を掛ける
-    this.mat.multiply(this.vpMatrix, this.mMatrix, this.mvpMatrix);
+    // this.mat.multiply(this.vpMatrix, this.mMatrix, this.mvpMatrix);
 
     // インデックスバッファによる描画
     this.gl.drawElements(this.gl.TRIANGLES, this.sphereData.i.length, this.gl.UNSIGNED_SHORT, 0);
