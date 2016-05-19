@@ -4,8 +4,4 @@ import Sample3 from "./Sample3";
 import Sample4 from "./Sample4";
 
 window.onload = function () {
-
-  const sample = new Sample4();
-  sample.run();
-
 };

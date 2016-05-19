@@ -1,6 +1,6 @@
   /*
- * Sample 4
- * 拡散光実装
+ * Sample 5
+ * todo:反射光実装
  */
 
 import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
@@ -219,4 +219,4 @@ class Sample4 {
   }
 }
 
-module.exports = Sample4;
+module.exports = Sample5;

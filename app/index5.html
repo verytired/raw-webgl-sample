@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="ja">
+    <title>raw-webgl-sample</title>
+    <script src="js/bundle.js"></script>
+    <script id="vs" type="x-shader/x-vertex">
+        attribute vec3 position;     // 頂点属性：頂点座標位置
+        attribute vec3 normal;       // 頂点属性：頂点法線
+        attribute vec4 color;        // 頂点属性：頂点色
+        uniform mat4 mvpMatrix;      // MVPマトリックス
+        varying vec3 vNormal;        // フラグメントシェーダへ法線を渡す
+        varying vec4 vColor;         // フラグメントシェーダへ色を渡す
+        void main(){
+            vNormal = normal;
+            vColor = color;
+            // 頂点の座標変換
+            gl_Position = mvpMatrix * vec4(position, 1.0);
+        }
+    </script>
+    <script id="fs" type="x-shader/x-fragment">
+        precision mediump float;
+        uniform mat4 invMatrix;      // inverseマトリックス
+        uniform vec3 lightDirection; // 平行光源の向き
+        varying vec3 vNormal;
+        varying vec4 vColor;
+        void main(){
+            // 平行光源の向きを逆行列で修正
+            vec3 invLight = (invMatrix * vec4(lightDirection, 1.0)).xyz;
+            // 拡散光の強度を算出
+            float diff = clamp(dot(normalize(invLight), vNormal), 0.1, 1.0);
+            // 最終出力カラー
+            gl_FragColor = vec4(vColor.rgb * diff, vColor.a);
+        }
+    </script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    window.onload = function () {
+        const sample = new Sample5();
+        sample.run();
+    };
+</script>
+</body>
+</html>
