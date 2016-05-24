@@ -2,7 +2,6 @@
 <html>
 <head lang="ja">
     <title>raw-webgl-sample</title>
-    <script src="js/bundle.js"></script>
     <script id="vs" type="x-shader/x-vertex">
         attribute vec3 position; // 頂点属性：頂点座標位置
         attribute vec4 color;    // 頂点属性：頂点色
@@ -25,10 +24,10 @@
 </head>
 <body>
 <canvas id="canvas"></canvas>
+<script src="js/bundle.js"></script>
 <script>
     window.onload = function () {
-        const sample = new Sample3();
-        sample.run();
+        sample3.run();
     };
 </script>
 </body>

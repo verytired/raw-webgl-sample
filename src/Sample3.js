@@ -15,8 +15,6 @@ class Sample3 {
    */
   constructor() {
 
-    console.log('Start Sample3');
-
     //canvasへの参上を変数に取得する
     let c = document.getElementById('canvas');
     // size指定
@@ -38,7 +36,7 @@ class Sample3 {
    * サンプルコード実行
    */
   run() {
-
+    console.log('Start Sample3');
     // WebGLコンテキストの取得ができたかどうか
     if (this.gl) {
       console.log('supports webgl');

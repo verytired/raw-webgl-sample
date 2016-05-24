@@ -2,7 +2,6 @@
 <html>
 <head lang="ja">
     <title>raw-webgl-sample</title>
-    <script src="js/bundle.js"></script>
     <script id="vs" type="x-shader/x-vertex">
         attribute vec3 position;
         void main(){
@@ -18,10 +17,10 @@
 </head>
 <body>
 <canvas id="canvas"></canvas>
+<script src="js/bundle.js"></script>
 <script>
     window.onload = function () {
-        const sample = new Sample1();
-        sample.run();
+        sample1.run();
     };
 </script>
 </body>

@@ -5,14 +5,12 @@
 
 import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
 
-class Sample4 {
+class Sample5 {
   /**
    * constructor
    * コンストラクタ
    */
   constructor() {
-
-    console.log('Start Sample4');
 
     //canvasへの参上を変数に取得する
     let c = document.getElementById('canvas');
@@ -35,6 +33,7 @@ class Sample4 {
    * サンプルコード実行
    */
   run() {
+    console.log('Start Sample5');
 
     // WebGLコンテキストの取得ができたかどうか
     if (this.gl) {

@@ -34,6 +34,7 @@ class Sample2 {
    * サンプルコード実行
    */
   run() {
+    console.log('Start Sample2');
 
     //WebGLコンテキストの取得ができたかどうか
     if (this.gl) {

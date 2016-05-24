@@ -10,6 +10,7 @@ class Sample1 {
    * サンプルコード実行
    */
   run() {
+    console.log('Start Sample1');
 
     // canvasへの参上を変数に取得する
     let c = document.getElementById('canvas');
