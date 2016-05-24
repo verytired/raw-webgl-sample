@@ -61,9 +61,12 @@ class Sample5 {
     this.uniLocation.mvpMatrix = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
     this.uniLocation.invMatrix = this.gl.getUniformLocation(this.programs, 'invMatrix');
     this.uniLocation.lightDirection = this.gl.getUniformLocation(this.programs, 'lightDirection');
+    // 反射光用にカメラと注視点を追加
+    this.uniLocation.eyePosition = this.gl.getUniformLocation(this.programs, 'eyePosition');
+    this.uniLocation.centerPoint = this.gl.getUniformLocation(this.programs, 'centerPoint');
 
     // 球体を形成する頂点のデータを受け取る
-    this.sphereData = sphere(16, 16, 1.0);
+    this.sphereData = sphere(64, 64, 1.0);
 
     // 頂点データからバッファを生成して登録する（頂点座標）
     let vPositionBuffer = this.gl.createBuffer();
@@ -104,7 +107,7 @@ class Sample5 {
     this.invMatrix = this.mat.identity(this.mat.create());
 
     // ビュー座標変換行列
-    let cameraPosition = [0.0, 0.0, 3.0]; // カメラの位置
+    let cameraPosition = [0.0, 0.0, 5.0]; // カメラの位置
     let centerPoint = [0.0, 0.0, 0.0];    // 注視点
     let cameraUp = [0.0, 1.0, 0.0];       // カメラの上方向
     this.mat.lookAt(cameraPosition, centerPoint, cameraUp, this.vMatrix);
@@ -119,12 +122,12 @@ class Sample5 {
     // 行列を掛け合わせてVPマトリックスを生成しておく
     this.mat.multiply(this.pMatrix, this.vMatrix, this.vpMatrix);   // pにvを掛ける
 
+    // 平行光源の向き
+    this.lightDirection = [1.0, 1.0, 1.0];
+
     // 設定を有効化する
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
-
-    // 平行光源の向き
-    this.lightDirection = [1.0, 1.0, 1.0];
 
     // rendering開始
     this.render();
@@ -148,7 +151,7 @@ class Sample5 {
     this.mat.identity(this.mMatrix);
 
     // モデル座標変換行列
-    let axis = [0.0, 1.0, 1.0];
+    let axis = [0.0, 1.0, 0.0];
     let radians = (this.count % 360) * Math.PI / 180;
     this.mat.rotate(this.mMatrix, radians, axis, this.mMatrix);
 
@@ -162,6 +165,8 @@ class Sample5 {
     this.gl.uniformMatrix4fv(this.uniLocation.mvpMatrix, false, this.mvpMatrix);
     this.gl.uniformMatrix4fv(this.uniLocation.invMatrix, false, this.invMatrix);
     this.gl.uniform3fv(this.uniLocation.lightDirection, this.lightDirection);
+    // this.gl.uniform3fv(this.uniLocation.eyePosition, this.cameraPosition);
+    // this.gl.uniform3fv(this.uniLocation.centerPoint, this.centerPoint);
 
     // インデックスバッファによる描画
     this.gl.drawElements(this.gl.TRIANGLES, this.sphereData.i.length, this.gl.UNSIGNED_SHORT, 0);
