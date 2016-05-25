@@ -12,7 +12,6 @@
         void main(){
             vNormal = normal;
             vColor = color;
-            // 頂点の座標変換
             gl_Position = mvpMatrix * vec4(position, 1.0);
         }
     </script>
@@ -20,15 +19,25 @@
         precision mediump float;
         uniform mat4 invMatrix;      // inverseマトリックス
         uniform vec3 lightDirection; // 平行光源の向き
+        uniform vec3 eyePosition;    // カメラの位置
+        uniform vec3 centerPoint;    // カメラの注視点
         varying vec3 vNormal;
         varying vec4 vColor;
         void main(){
-            // 平行光源の向きを逆行列で修正
-            vec3 invLight = (invMatrix * vec4(lightDirection, 1.0)).xyz;
+            // カメラの位置と注視点を用いて視線を算出
+            vec3 eyeDirection = eyePosition - centerPoint;
+            // 視線ベクトルを逆行列で修正
+            vec3 invEye = normalize(invMatrix * vec4(eyeDirection, 1.0)).xyz;
+            // ライトベクトルを逆行列で修正
+            vec3 invLight = normalize(invMatrix * vec4(lightDirection, 1.0)).xyz;
+            // ハーフベクトルを算出
+            vec3 halfVector = normalize(invLight + invEye);
             // 拡散光の強度を算出
-            float diff = clamp(dot(normalize(invLight), vNormal), 0.1, 1.0);
+            float diff = clamp(dot(invLight, vNormal), 0.1, 1.0);
+            // 反射光の強度を算出
+            float spec = pow(clamp(dot(halfVector, vNormal), 0.0, 1.0), 20.0);
             // 最終出力カラー
-            gl_FragColor = vec4(vColor.rgb * diff, vColor.a);
+            gl_FragColor = vec4(vColor.rgb * diff + spec, vColor.a);
         }
     </script>
 </head>
