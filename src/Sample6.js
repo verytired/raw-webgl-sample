@@ -1,11 +1,11 @@
   /*
- * Sample 5
- * 反射光実装
+ * Sample 6
+ * todo: 環境光実装
  */
 
 import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
 
-class Sample5 {
+class Sample6 {
   /**
    * constructor
    * コンストラクタ
@@ -66,6 +66,8 @@ class Sample5 {
     // 反射光用にカメラと注視点を追加
     this.uniLocation.eyePosition = this.gl.getUniformLocation(this.programs, 'eyePosition');
     this.uniLocation.centerPoint = this.gl.getUniformLocation(this.programs, 'centerPoint');
+    // 環境光カラー
+    this.uniLocation.ambientColor = this.gl.getUniformLocation(this.programs, 'ambientColor');
 
     // 球体を形成する頂点のデータを受け取る
     this.sphereData = sphere(64, 64, 1.0);
@@ -109,10 +111,10 @@ class Sample5 {
     this.invMatrix = this.mat.identity(this.mat.create());
 
     // ビュー座標変換行列
-    let cameraPosition = [0.0, 0.0, 5.0]; // カメラの位置
-    let centerPoint = [0.0, 0.0, 0.0];    // 注視点
-    let cameraUp = [0.0, 1.0, 0.0];       // カメラの上方向
-    this.mat.lookAt(cameraPosition, centerPoint, cameraUp, this.vMatrix);
+    this.cameraPosition = [0.0, 0.0, 5.0]; // カメラの位置
+    this.centerPoint = [0.0, 0.0, 0.0];    // 注視点
+    this.cameraUp = [0.0, 1.0, 0.0];       // カメラの上方向
+    this.mat.lookAt(this.cameraPosition, this.centerPoint, this.cameraUp, this.vMatrix);
 
     // プロジェクションのための情報を揃える
     let fovy = 45;                             // 視野角
@@ -126,6 +128,9 @@ class Sample5 {
 
     // 平行光源の向き
     this.lightDirection = [1.0, 1.0, 1.0];
+
+    // 環境光の色
+    this.ambientColor = [0.5, 0.0, 0.0, 1.0];
 
     // 設定を有効化する
     this.gl.enable(this.gl.DEPTH_TEST);
@@ -169,7 +174,7 @@ class Sample5 {
     this.gl.uniform3fv(this.uniLocation.lightDirection, this.lightDirection);
     this.gl.uniform3fv(this.uniLocation.eyePosition, this.cameraPosition);
     this.gl.uniform3fv(this.uniLocation.centerPoint, this.centerPoint);
-
+    this.gl.uniform4fv(this.uniLocation.ambientColor, this.ambientColor);
     // インデックスバッファによる描画
     this.gl.drawElements(this.gl.TRIANGLES, this.sphereData.i.length, this.gl.UNSIGNED_SHORT, 0);
     this.gl.flush();
@@ -225,4 +230,4 @@ class Sample5 {
   }
 }
 
-module.exports = Sample5;
+module.exports = Sample6;
