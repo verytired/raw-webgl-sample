@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="ja">
+    <title>raw-webgl-sample</title>
+    <script id="vs" type="x-shader/x-vertex">
+        attribute vec3 position;
+        uniform mat4 mvpMatrix;
+        void main(){
+            gl_Position = mvpMatrix * vec4(position, 1.0);
+        }
+    </script>
+    <script id="fs" type="x-shader/x-fragment">
+        precision mediump float;
+        void main(){
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        }
+    </script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script src="js/bundle.js"></script>
+<script>
+    window.onload = function () {
+        sample2.run();
+    };
+</script>
+</body>
+</html>
+

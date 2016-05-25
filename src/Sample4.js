@@ -1,6 +1,6 @@
   /*
  * Sample 4
- * todo:ライティングの実装
+ * 拡散光実装
  */
 
 import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
@@ -11,9 +11,6 @@ class Sample4 {
    * コンストラクタ
    */
   constructor() {
-
-    console.log('Start Sample4');
-
     //canvasへの参上を変数に取得する
     let c = document.getElementById('canvas');
     // size指定
@@ -35,6 +32,7 @@ class Sample4 {
    * サンプルコード実行
    */
   run() {
+    console.log('Start Sample4');
 
     // WebGLコンテキストの取得ができたかどうか
     if (this.gl) {
