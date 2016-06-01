@@ -1,11 +1,11 @@
   /*
- * Sample 6
- * 環境光実装
+ * Sample 7
+ * todo: テクスチャ
  */
 
 import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
 
-class Sample6 {
+class Sample7 {
   /**
    * constructor
    * コンストラクタ
@@ -230,4 +230,4 @@ class Sample6 {
   }
 }
 
-module.exports = Sample6;
+module.exports = Sample7;

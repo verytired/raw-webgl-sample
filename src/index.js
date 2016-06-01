@@ -11,3 +11,4 @@ window.sample3 = new Sample3();
 window.sample4 = new Sample4();
 window.sample5 = new Sample5();
 window.sample6 = new Sample6();
+window.sample7 = new Sample7();
