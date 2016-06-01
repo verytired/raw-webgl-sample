@@ -124,7 +124,7 @@ class Sample7 {
     this.gl.depthFunc(this.gl.LEQUAL);
 
     // テクスチャ生成関数を呼び出す
-    var texture = null;
+    this.texture = null;
     this.generateTexture('../image/ssf.jpg');
 
     // ロード完了をチェックする関数を呼び出す
@@ -159,7 +159,7 @@ class Sample7 {
 
     // シェーダに汎用データを送信する
     this.gl.uniformMatrix4fv(this.uniLocation.mvpMatrix, false, this.mvpMatrix);
-    this.gl.uniform1i(this.uniLocation.this.texture, 0);
+    this.gl.uniform1i(this.uniLocation.texture, 0);
 
     // インデックスバッファによる描画
     this.gl.drawElements(this.gl.TRIANGLES, this.sphereData.i.length, this.gl.UNSIGNED_SHORT, 0);
