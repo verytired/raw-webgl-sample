@@ -4,6 +4,7 @@ import Sample3 from "./Sample3";
 import Sample4 from "./Sample4";
 import Sample5 from "./Sample5";
 import Sample6 from "./Sample6";
+import Sample7 from "./Sample7";
 
 window.sample1 = new Sample1();
 window.sample2 = new Sample2();

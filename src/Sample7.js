@@ -1,4 +1,4 @@
-  /*
+/*
  * Sample 7
  * todo: テクスチャ
  */
@@ -61,45 +61,32 @@ class Sample7 {
     // uniformロケーションを取得しておく
     this.uniLocation = {};
     this.uniLocation.mvpMatrix = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
-    this.uniLocation.invMatrix = this.gl.getUniformLocation(this.programs, 'invMatrix');
-    this.uniLocation.lightDirection = this.gl.getUniformLocation(this.programs, 'lightDirection');
-    // 反射光用にカメラと注視点を追加
-    this.uniLocation.eyePosition = this.gl.getUniformLocation(this.programs, 'eyePosition');
-    this.uniLocation.centerPoint = this.gl.getUniformLocation(this.programs, 'centerPoint');
-    // 環境光カラー
-    this.uniLocation.ambientColor = this.gl.getUniformLocation(this.programs, 'ambientColor');
+    this.uniLocation.texture = this.gl.getUniformLocation(this.programs, 'texture');
 
     // 球体を形成する頂点のデータを受け取る
     this.sphereData = sphere(64, 64, 1.0);
 
-    // 頂点データからバッファを生成して登録する（頂点座標）
-    let vPositionBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vPositionBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.p), this.gl.STATIC_DRAW);
-    let attLocPosition = this.gl.getAttribLocation(this.programs, 'position');
-    this.gl.enableVertexAttribArray(attLocPosition);
-    this.gl.vertexAttribPointer(attLocPosition, 3, this.gl.FLOAT, false, 0, 0);
+    // 頂点データからバッファを生成して配列に格納しておく
+    var vPositionBuffer = this.generateVBO(this.sphereData.p);
+    var vTexCoordBuffer = this.generateVBO(this.sphereData.t);
+    var vboList = [vPositionBuffer, vTexCoordBuffer];
 
-    // 頂点データからバッファを生成して登録する（頂点法線）
-    let vNormalBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vNormalBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.n), this.gl.STATIC_DRAW);
-    let attLocNormal = this.gl.getAttribLocation(this.programs, 'normal');
-    this.gl.enableVertexAttribArray(attLocNormal);
-    this.gl.vertexAttribPointer(attLocNormal, 3, this.gl.FLOAT, false, 0, 0);
+    // attributeLocationを取得して配列に格納する
+    var attLocation = [];
+    attLocation[0] = this.gl.getAttribLocation(this.programs, 'position');
+    attLocation[1] = this.gl.getAttribLocation(this.programs, 'texCoord');
 
-    // 頂点データからバッファを生成して登録する（頂点色）
-    let vColorBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vColorBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.sphereData.c), this.gl.STATIC_DRAW);
-    let attLocColor = this.gl.getAttribLocation(this.programs, 'color');
-    this.gl.enableVertexAttribArray(attLocColor);
-    this.gl.vertexAttribPointer(attLocColor, 4, this.gl.FLOAT, false, 0, 0);
+    // attributeのストライドを配列に格納しておく
+    var attStride = [];
+    attStride[0] = 3;
+    attStride[1] = 2;
+
 
     // インデックスバッファの生成
-    let indexBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(this.sphereData.i), this.gl.STATIC_DRAW);
+    var indexBuffer = this.generateIBO(this.sphereData.i);
+
+    // VBOとIBOを登録しておく
+    this.setAttribute(vboList, attLocation, attStride, indexBuffer);
 
     // 行列の初期化
     this.mat = new matIV();
@@ -136,8 +123,13 @@ class Sample7 {
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
 
-    // rendering開始
-    this.render();
+    // テクスチャ生成関数を呼び出す
+    var texture = null;
+    this.generateTexture('../image/ssf.jpg');
+
+    // ロード完了をチェックする関数を呼び出す
+    this.loadCheck();
+
   }
 
   /**
@@ -145,14 +137,11 @@ class Sample7 {
    */
   render() {
 
-    // Canvasエレメントをクリアする
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
-    // モデル座標変換行列を一度初期化してリセットする
-    this.mat.identity(this.mMatrix);
-
     // カウンタをインクリメントする
     this.count++;
+
+    // Canvasエレメントをクリアする
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
     // モデル座標変換行列を一度初期化してリセットする
     this.mat.identity(this.mMatrix);
@@ -170,11 +159,8 @@ class Sample7 {
 
     // シェーダに汎用データを送信する
     this.gl.uniformMatrix4fv(this.uniLocation.mvpMatrix, false, this.mvpMatrix);
-    this.gl.uniformMatrix4fv(this.uniLocation.invMatrix, false, this.invMatrix);
-    this.gl.uniform3fv(this.uniLocation.lightDirection, this.lightDirection);
-    this.gl.uniform3fv(this.uniLocation.eyePosition, this.cameraPosition);
-    this.gl.uniform3fv(this.uniLocation.centerPoint, this.centerPoint);
-    this.gl.uniform4fv(this.uniLocation.ambientColor, this.ambientColor);
+    this.gl.uniform1i(this.uniLocation.this.texture, 0);
+
     // インデックスバッファによる描画
     this.gl.drawElements(this.gl.TRIANGLES, this.sphereData.i.length, this.gl.UNSIGNED_SHORT, 0);
     this.gl.flush();
@@ -227,6 +213,111 @@ class Sample7 {
 
     // 生成したプログラムオブジェクトを戻り値として返す
     return programs;
+  }
+
+  // 頂点バッファ（VBO）を生成する関数
+  generateVBO(data) {
+    // バッファオブジェクトの生成
+    var vbo = this.gl.createBuffer();
+
+    // バッファをバインドする
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo);
+
+    // バッファにデータをセット
+    this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(data), this.gl.STATIC_DRAW);
+
+    // バッファのバインドを無効化
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+
+    // 生成した VBO を返して終了
+    return vbo;
+  }
+
+  // インデックスバッファ（IBO）を生成する関数
+  generateIBO(data) {
+    // バッファオブジェクトの生成
+    var ibo = this.gl.createBuffer();
+
+    // バッファをバインドする
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
+
+    // バッファにデータをセット
+    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), this.gl.STATIC_DRAW);
+
+    // バッファのバインドを無効化
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
+
+    // 生成したIBOを返して終了
+    return ibo;
+  }
+
+  // VBOとIBOを登録する関数
+  setAttribute(vbo, attL, attS, ibo) {
+    // 引数として受け取った配列を処理する
+    for (var i in vbo) {
+      // バッファをバインドする
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vbo[i]);
+
+      // attributeLocationを有効にする
+      this.gl.enableVertexAttribArray(attL[i]);
+
+      // attributeLocationを通知し登録する
+      this.gl.vertexAttribPointer(attL[i], attS[i], this.gl.FLOAT, false, 0, 0);
+    }
+
+    // インデックスバッファをバインドする
+    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, ibo);
+  }
+
+  // テクスチャオブジェクトを初期化する
+  generateTexture(source) {
+    // イメージオブジェクトの生成
+    var img = new Image();
+
+    // データのオンロードをトリガにする
+    img.onload = () => {
+      console.log(this.gl);
+
+      // テクスチャオブジェクトの生成
+      this.texture = this.gl.createTexture();
+
+      // テクスチャをバインドする
+      this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+
+      // テクスチャへイメージを適用
+      this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, img);
+
+      // ミップマップを生成
+      this.gl.generateMipmap(this.gl.TEXTURE_2D);
+
+      // テクスチャのバインドを無効化
+      this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+    };
+
+    // イメージオブジェクトの読み込みを開始
+    img.src = source;
+  }
+
+  // テクスチャ生成完了をチェックする関数
+  loadCheck() {
+
+    console.log('start render', this.texture);
+
+    // テクスチャの生成をチェック
+    if (this.texture != null) {
+
+      // 生成されていたらテクスチャをバインドしなおす
+      this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+
+      // レンダリング関数を呼び出す
+      this.render();
+
+      // 再起を止めるためにreturnする
+      return;
+    }
+    console.log('now loading');
+    // 再帰呼び出し
+    setTimeout(() => { this.loadCheck()}, 100);
   }
 }
 
