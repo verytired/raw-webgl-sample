@@ -150,7 +150,7 @@ class Sample9 {
     this.mat.multiply(this.pMatrix, this.vMatrix, this.vpMatrix);   // pにvを掛ける
 
     // 平行光源の向き
-    this.lightDirection = [1.0, 1.0, 1.0];
+    this.lightDirection = [0.0, 3.0, 3.0];
 
     // 設定を有効化する
     this.gl.enable(this.gl.DEPTH_TEST);
@@ -162,7 +162,6 @@ class Sample9 {
 
     // ロード完了をチェックする関数を呼び出す
     this.loadCheck();
-
   }
 
   /**
@@ -180,7 +179,7 @@ class Sample9 {
     this.mat.identity(this.mMatrix);
 
     // モデル座標変換行列
-    let axis = [0.0, 1.0, 0.0];
+    let axis = [1.0, 1.0, 0.0];
     let radians = (this.count % 360) * Math.PI / 180;
 
     // モデル座標変換行列でみっつのモデルを描く
@@ -321,7 +320,6 @@ class Sample9 {
 
     // データのオンロードをトリガにする
     img.onload = () => {
-      console.log(this.gl);
 
       // テクスチャオブジェクトの生成
       this.texture = this.gl.createTexture();
@@ -345,14 +343,19 @@ class Sample9 {
 
   // テクスチャ生成完了をチェックする関数
   loadCheck() {
-
-    console.log('start render', this.texture);
-
     // テクスチャの生成をチェック
     if (this.texture != null) {
 
       // 生成されていたらテクスチャをバインドしなおす
       this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture);
+
+      console.log('start render', this.texture);
+
+      // 更新しないuniform変数を先にシェーダに送る
+      this.gl.uniform3fv(this.uniLocation.lightDirection, this.lightDirection);
+      this.gl.uniform3fv(this.uniLocation.eyePosition, this.cameraPosition);
+      this.gl.uniform3fv(this.uniLocation.centerPoint, this.centerPoint);
+      this.gl.uniform1i(this.uniLocation.texture, 0);
 
       // レンダリング関数を呼び出す
       this.render();
@@ -360,7 +363,9 @@ class Sample9 {
       // 再起を止めるためにreturnする
       return;
     }
-    console.log('now loading');
+
+    console.log('now texture loading');
+
     // 再帰呼び出し
     setTimeout(() => { this.loadCheck()}, 100);
   }
