@@ -34,6 +34,8 @@ class Sample8 {
    * サンプルコード実行
    */
   run() {
+    console.log('Start Sample8');
+
     this.loadModel();
   }
 
@@ -62,11 +64,8 @@ class Sample8 {
   }
 
   initialize(json) {
-    // console.log(json)
-  }
 
-  runDraw() {
-    console.log('Start Sample8');
+    this.json = json;
 
     // WebGLコンテキストの取得ができたかどうか
     if (this.gl) {
@@ -94,29 +93,29 @@ class Sample8 {
     // uniformロケーションを取得しておく
     this.uniLocation = {};
     this.uniLocation.mvpMatrix = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
-    this.uniLocation.texture = this.gl.getUniformLocation(this.programs, 'texture');
-
-    // 球体を形成する頂点のデータを受け取る
-    this.sphereData = sphere(64, 64, 1.0);
+    this.uniLocation.mvpMatrix = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
+    this.uniLocation.invMatrix = this.gl.getUniformLocation(this.programs, 'invMatrix');
+    this.uniLocation.lightDirection = this.gl.getUniformLocation(this.programs, 'lightDirection');
+    this.uniLocation.eyePosition = this.gl.getUniformLocation(this.programs, 'eyePosition');
+    this.uniLocation.centerPoint = this.gl.getUniformLocation(this.programs, 'centerPoint');
 
     // 頂点データからバッファを生成して配列に格納しておく
-    var vPositionBuffer = this.generateVBO(this.sphereData.p);
-    var vTexCoordBuffer = this.generateVBO(this.sphereData.t);
-    var vboList = [vPositionBuffer, vTexCoordBuffer];
+    let vPositionBuffer = this.generateVBO(json.position);
+    let vNormalBuffer = this.generateVBO(json.normal);
+    let vboList = [vPositionBuffer, vNormalBuffer];
 
     // attributeLocationを取得して配列に格納する
-    var attLocation = [];
+    let attLocation = [];
     attLocation[0] = this.gl.getAttribLocation(this.programs, 'position');
-    attLocation[1] = this.gl.getAttribLocation(this.programs, 'texCoord');
+    attLocation[1] = this.gl.getAttribLocation(this.programs, 'normal');
 
     // attributeのストライドを配列に格納しておく
-    var attStride = [];
+    let attStride = [];
     attStride[0] = 3;
-    attStride[1] = 2;
-
+    attStride[1] = 3;
 
     // インデックスバッファの生成
-    var indexBuffer = this.generateIBO(this.sphereData.i);
+    let indexBuffer = this.generateIBO(json.index);
 
     // VBOとIBOを登録しておく
     this.setAttribute(vboList, attLocation, attStride, indexBuffer);
@@ -131,8 +130,8 @@ class Sample8 {
     this.invMatrix = this.mat.identity(this.mat.create());
 
     // ビュー座標変換行列
-    this.cameraPosition = [0.0, 0.0, 5.0]; // カメラの位置
-    this.centerPoint = [0.0, 0.0, 0.0];    // 注視点
+    this.cameraPosition = [0.0, 3.0, 10.0]; // カメラの位置
+    this.centerPoint = [0.0, 3.0, 0.0];    // 注視点
     this.cameraUp = [0.0, 1.0, 0.0];       // カメラの上方向
     this.mat.lookAt(this.cameraPosition, this.centerPoint, this.cameraUp, this.vMatrix);
 
@@ -140,7 +139,7 @@ class Sample8 {
     let fovy = 45;                             // 視野角
     let aspect = this.canvas.width / this.canvas.height; // アスペクト比
     let near = 0.1;                            // 空間の最前面
-    let far = 10.0;                            // 空間の奥行き終端
+    let far = 20.0;                            // 空間の奥行き終端
     this.mat.perspective(fovy, aspect, near, far, this.pMatrix);
 
     // 行列を掛け合わせてVPマトリックスを生成しておく
@@ -148,9 +147,6 @@ class Sample8 {
 
     // 平行光源の向き
     this.lightDirection = [1.0, 1.0, 1.0];
-
-    // 環境光の色
-    this.ambientColor = [0.5, 0.0, 0.0, 1.0];
 
     // 設定を有効化する
     this.gl.enable(this.gl.DEPTH_TEST);
@@ -192,10 +188,13 @@ class Sample8 {
 
     // シェーダに汎用データを送信する
     this.gl.uniformMatrix4fv(this.uniLocation.mvpMatrix, false, this.mvpMatrix);
-    this.gl.uniform1i(this.uniLocation.texture, 0);
+    this.gl.uniformMatrix4fv(this.uniLocation.invMatrix, false, this.invMatrix);
+    this.gl.uniform3fv(this.uniLocation.lightDirection, this.lightDirection);
+    this.gl.uniform3fv(this.uniLocation.eyePosition, this.cameraPosition);
+    this.gl.uniform3fv(this.uniLocation.centerPoint, this.centerPoint);
 
     // インデックスバッファによる描画
-    this.gl.drawElements(this.gl.TRIANGLES, this.sphereData.i.length, this.gl.UNSIGNED_SHORT, 0);
+    this.gl.drawElements(this.gl.TRIANGLES, this.json.index.length, this.gl.UNSIGNED_SHORT, 0);
     this.gl.flush();
 
     // 再帰呼び出し
