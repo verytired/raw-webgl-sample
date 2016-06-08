@@ -33,7 +33,7 @@ class Sample6 {
    * サンプルコード実行
    */
   run() {
-    console.log('Start Sample5');
+    console.log('Start Sample6');
 
     // WebGLコンテキストの取得ができたかどうか
     if (this.gl) {
