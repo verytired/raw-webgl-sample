@@ -5,10 +5,16 @@
     <script id="vs" type="x-shader/x-vertex">
         attribute vec3 position;     // 頂点属性：頂点座標位置
         attribute vec3 normal;       // 頂点属性：頂点法線
+        attribute vec2 texCoord;     // 頂点属性：テクスチャ座標
+        uniform mat4 mMatrix;        // モデル座標変換行列
         uniform mat4 mvpMatrix;      // MVPマトリックス
+        varying vec4 vPosition;      // フラグメントシェーダへ頂点座標を渡す
         varying vec3 vNormal;        // フラグメントシェーダへ法線を渡す
+        varying vec2 vTexCoord;      // フラグメントシェーダへテクスチャ座標を渡す
         void main(){
+            vPosition = mMatrix * vec4(position, 1.0); // モデル座標変換
             vNormal = normal;
+            vTexCoord = texCoord;
             gl_Position = mvpMatrix * vec4(position, 1.0);
         }
     </script>

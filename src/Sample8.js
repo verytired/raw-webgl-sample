@@ -92,7 +92,7 @@ class Sample8 {
 
     // uniformロケーションを取得しておく
     this.uniLocation = {};
-    this.uniLocation.mvpMatrix = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
+    this.uniLocation.mMatrix = this.gl.getUniformLocation(this.programs, 'mMatrix');
     this.uniLocation.mvpMatrix = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
     this.uniLocation.invMatrix = this.gl.getUniformLocation(this.programs, 'invMatrix');
     this.uniLocation.lightDirection = this.gl.getUniformLocation(this.programs, 'lightDirection');

@@ -34,7 +34,7 @@ class Sample9 {
    * サンプルコード実行
    */
   run() {
-    console.log('Start Sample8');
+    console.log('Start Sample9');
 
     this.loadModel();
   }
@@ -44,7 +44,7 @@ class Sample9 {
     let x = new XMLHttpRequest();
 
     // 取得するファイルは同じディレクトリに入れておく
-    x.open('GET', '../model/teapot.obj');
+    x.open('GET', '../model/apple.obj');
 
     // ファイル取得後の処理
     x.onreadystatechange = () => {
@@ -92,27 +92,31 @@ class Sample9 {
 
     // uniformロケーションを取得しておく
     this.uniLocation = {};
-    this.uniLocation.mvpMatrix = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
+    this.uniLocation.mMatrix = this.gl.getUniformLocation(this.programs, 'mMatrix');
     this.uniLocation.mvpMatrix = this.gl.getUniformLocation(this.programs, 'mvpMatrix');
     this.uniLocation.invMatrix = this.gl.getUniformLocation(this.programs, 'invMatrix');
     this.uniLocation.lightDirection = this.gl.getUniformLocation(this.programs, 'lightDirection');
     this.uniLocation.eyePosition = this.gl.getUniformLocation(this.programs, 'eyePosition');
     this.uniLocation.centerPoint = this.gl.getUniformLocation(this.programs, 'centerPoint');
+    this.uniLocation.texture = this.gl.getUniformLocation(this.programs, 'texture');
 
     // 頂点データからバッファを生成して配列に格納しておく
     let vPositionBuffer = this.generateVBO(json.position);
     let vNormalBuffer = this.generateVBO(json.normal);
-    let vboList = [vPositionBuffer, vNormalBuffer];
+    let vTexCoordBuffer = this.generateVBO(json.texCoord);
+    let vboList = [vPositionBuffer, vNormalBuffer, vTexCoordBuffer];
 
     // attributeLocationを取得して配列に格納する
     let attLocation = [];
     attLocation[0] = this.gl.getAttribLocation(this.programs, 'position');
     attLocation[1] = this.gl.getAttribLocation(this.programs, 'normal');
+    attLocation[2] = this.gl.getAttribLocation(this.programs, 'texCoord');
 
     // attributeのストライドを配列に格納しておく
     let attStride = [];
     attStride[0] = 3;
     attStride[1] = 3;
+    attStride[2] = 2;
 
     // インデックスバッファの生成
     let indexBuffer = this.generateIBO(json.index);
@@ -130,8 +134,8 @@ class Sample9 {
     this.invMatrix = this.mat.identity(this.mat.create());
 
     // ビュー座標変換行列
-    this.cameraPosition = [0.0, 3.0, 10.0]; // カメラの位置
-    this.centerPoint = [0.0, 3.0, 0.0];    // 注視点
+    this.cameraPosition = [0.0, 0.0, 10.0]; // カメラの位置
+    this.centerPoint = [0.0, 0.0, 0.0];    // 注視点
     this.cameraUp = [0.0, 1.0, 0.0];       // カメラの上方向
     this.mat.lookAt(this.cameraPosition, this.centerPoint, this.cameraUp, this.vMatrix);
 
@@ -154,7 +158,7 @@ class Sample9 {
 
     // テクスチャ生成関数を呼び出す
     this.texture = null;
-    this.generateTexture('../image/ssf.jpg');
+    this.generateTexture('../image/apple.jpg');
 
     // ロード完了をチェックする関数を呼び出す
     this.loadCheck();
@@ -178,23 +182,32 @@ class Sample9 {
     // モデル座標変換行列
     let axis = [0.0, 1.0, 0.0];
     let radians = (this.count % 360) * Math.PI / 180;
-    this.mat.rotate(this.mMatrix, radians, axis, this.mMatrix);
 
-    // 行列を掛け合わせてMVPマトリックスを生成
-    this.mat.multiply(this.vpMatrix, this.mMatrix, this.mvpMatrix); // さらにmを掛ける
+    // モデル座標変換行列でみっつのモデルを描く
+    for(let i = 0; i < 3; i++){
+      // 毎回位置が変化するようにする
+      let translatePosition = [-3.0 + i * 3.0, 0.0, 0.0];
+      this.mat.identity(this.mMatrix);
 
-    // 逆行列を生成
-    this.mat.inverse(this.mMatrix, this.invMatrix);
+      // モデル座標変換行列を生成する
+      this.mat.translate(this.mMatrix, translatePosition, this.mMatrix);
+      this.mat.rotate(this.mMatrix, radians, axis, this.mMatrix);
 
-    // シェーダに汎用データを送信する
-    this.gl.uniformMatrix4fv(this.uniLocation.mvpMatrix, false, this.mvpMatrix);
-    this.gl.uniformMatrix4fv(this.uniLocation.invMatrix, false, this.invMatrix);
-    this.gl.uniform3fv(this.uniLocation.lightDirection, this.lightDirection);
-    this.gl.uniform3fv(this.uniLocation.eyePosition, this.cameraPosition);
-    this.gl.uniform3fv(this.uniLocation.centerPoint, this.centerPoint);
+      // VPマトリックスにモデル座標変換行列を掛ける
+      this.mat.multiply(this.vpMatrix, this.mMatrix, this.mvpMatrix);
 
-    // インデックスバッファによる描画
-    this.gl.drawElements(this.gl.TRIANGLES, this.json.index.length, this.gl.UNSIGNED_SHORT, 0);
+      // 逆行列を生成
+      this.mat.inverse(this.mMatrix, this.invMatrix);
+
+      // シェーダに汎用データを送信する
+      this.gl.uniformMatrix4fv(this.uniLocation.mMatrix, false, this.mMatrix);
+      this.gl.uniformMatrix4fv(this.uniLocation.mvpMatrix, false, this.mvpMatrix);
+      this.gl.uniformMatrix4fv(this.uniLocation.invMatrix, false, this.invMatrix);
+
+      // インデックスバッファによる描画
+      this.gl.drawElements(this.gl.TRIANGLES, this.json.index.length, this.gl.UNSIGNED_SHORT, 0);
+    }
+
     this.gl.flush();
 
     // 再帰呼び出し
