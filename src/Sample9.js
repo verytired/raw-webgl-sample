@@ -1,12 +1,12 @@
 /*
  * Sample 8
- * モデル読み込み
+ * 複数モデル読み込み
  */
 
 import {matIV, qtnIV, torus, cube, hsva ,sphere} from "./minMatrix";
 import {objsonConvert, vec3Normalize, faceNormal} from "./objson";
 
-class Sample8 {
+class Sample9 {
   /**
    * constructor
    * コンストラクタ
@@ -353,4 +353,4 @@ class Sample8 {
   }
 }
 
-module.exports = Sample8;
+module.exports = Sample9;

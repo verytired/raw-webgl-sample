@@ -6,6 +6,7 @@ import Sample5 from "./Sample5";
 import Sample6 from "./Sample6";
 import Sample7 from "./Sample7";
 import Sample8 from "./Sample8";
+import Sample9 from "./Sample9";
 
 window.sample1 = new Sample1();
 window.sample2 = new Sample2();
@@ -15,3 +16,4 @@ window.sample5 = new Sample5();
 window.sample6 = new Sample6();
 window.sample7 = new Sample7();
 window.sample8 = new Sample8();
+window.sample9 = new Sample9();
