@@ -34,6 +34,38 @@ class Sample8 {
    * サンプルコード実行
    */
   run() {
+    this.loadModel();
+  }
+
+  loadModel() {
+    // XMLHttpRequestを利用してOBJ形式のファイルを取得
+    let x = new XMLHttpRequest();
+
+    // 取得するファイルは同じディレクトリに入れておく
+    x.open('GET', '../model/teapot.obj');
+
+    // ファイル取得後の処理
+    x.onreadystatechange = () => {
+      if(x.readyState == 4){
+        // OBJ形式ファイルを変換する
+        var obj = objsonConvert(x.responseText);
+
+        // 変換したJSON文字列をパースする
+        const json = JSON.parse(obj);
+
+        // WebGL関連処理を呼び出す
+        this.initialize(json);
+      }
+    };
+
+    x.send();
+  }
+
+  initialize(json) {
+    // console.log(json)
+  }
+
+  runDraw() {
     console.log('Start Sample8');
 
     // WebGLコンテキストの取得ができたかどうか
