@@ -21,25 +21,32 @@
     <script id="fs" type="x-shader/x-fragment">
         precision mediump float;
         uniform mat4 invMatrix;      // inverseマトリックス
-        uniform vec3 lightDirection; // 平行光源の向き
+        uniform vec3 lightDirection;  // 光源の位置
         uniform vec3 eyePosition;    // カメラの位置
         uniform vec3 centerPoint;    // カメラの注視点
+        uniform sampler2D texture;   // テクスチャユニット番号
+        varying vec4 vPosition;
         varying vec3 vNormal;
+        varying vec2 vTexCoord;
         void main(){
+            // ライトベクトルの正規化
+            vec3 light = normalize(lightDirection - vPosition.xyz);
             // カメラの位置と注視点を用いて視線を算出
-            vec3 eyeDirection = eyePosition - centerPoint;
+            vec3 eyeDirection = normalize(eyePosition - centerPoint);
             // 視線ベクトルを逆行列で修正
             vec3 invEye = normalize(invMatrix * vec4(eyeDirection, 1.0)).xyz;
             // ライトベクトルを逆行列で修正
-            vec3 invLight = normalize(invMatrix * vec4(lightDirection, 1.0)).xyz;
+            vec3 invLight = normalize(invMatrix * vec4(light, 1.0)).xyz;
             // ハーフベクトルを算出
             vec3 halfVector = normalize(invLight + invEye);
             // 拡散光の強度を算出
             float diff = clamp(dot(invLight, vNormal), 0.1, 1.0);
             // 反射光の強度を算出
             float spec = pow(clamp(dot(halfVector, vNormal), 0.0, 1.0), 20.0);
+            // テクスチャカラー
+            vec3 textureColor = texture2D(texture, vTexCoord).rgb;
             // 最終出力カラー
-            gl_FragColor = vec4(vec3(diff) + spec, 1.0);
+            gl_FragColor = vec4(textureColor * vec3(diff) + spec, 1.0);
         }
     </script>
 </head>
