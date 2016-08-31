@@ -1,0 +1,4 @@
+{
+  // 推奨設定を継承する
+  "extends": "eslint:recommended"
+}
